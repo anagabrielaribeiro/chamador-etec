@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Controle ETEC</title>
+    <style>
+        body { background-color: #f4f6f9; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .control-panel { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px; }
+        
+        h2 { color: #cc0000; margin-top: 0; }
+        .status { font-size: 12px; color: green; margin-bottom: 20px; }
+        
+        .section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .label { font-weight: bold; color: #555; margin-bottom: 10px; display: block; }
+        
+        .input-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .btn-small { width: 40px; height: 40px; font-size: 20px; border: 1px solid #ddd; background: #eee; cursor: pointer; border-radius: 5px; }
+        .number-display { font-size: 24px; font-weight: bold; width: 60px; text-align: center; border: 1px solid #ddd; border-radius: 5px; line-height: 40px; }
+        
+        .btn-call { width: 100%; padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; }
+        .btn-blue { background-color: #008CBA; }
+        .btn-red { background-color: #f44336; }
+        .btn-blue:active, .btn-red:active { transform: scale(0.98); }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h2>CONTROLE ETEC</h2>
+        <div class="status">● Sincronizado com o Painel</div>
+
+        <div class="section">
+            <span class="label">SENHA NORMAL</span>
+            <div class="input-group">
+                <button class="btn-small" onclick="ajustar('normal', -1)">-</button>
+                <div class="number-display" id="valNormal">...</div>
+                <button class="btn-small" onclick="ajustar('normal', 1)">+</button>
+            </div>
+            <button class="btn-call btn-blue" onclick="chamar('normal')">CHAMAR NORMAL</button>
+        </div>
+
+        <div class="section">
+            <span class="label">SENHA PREFERENCIAL</span>
+            <div class="input-group">
+                <button class="btn-small" onclick="ajustar('preferencial', -1)">-</button>
+                <div class="number-display" id="valPref">...</div>
+                <button class="btn-small" onclick="ajustar('preferencial', 1)">+</button>
+            </div>
+            <button class="btn-call btn-red" onclick="chamar('preferencial')">CHAMAR PREFERENCIAL</button>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis locais para controle rápido
+        let currentNormal = 0;
+        let currentPref = 0;
+
+        // 1. Carregar valores iniciais do banco
+        db.ref('senhas').on('value', (snap) => {
+            const dados = snap.val() || {};
+            currentNormal = dados.normal || 0;
+            currentPref = dados.preferencial || 0;
+            
+            document.getElementById('valNormal').innerText = currentNormal;
+            document.getElementById('valPref').innerText = currentPref;
+        });
+
+        // 2. Função para ajustar (+ ou -) apenas localmente ou salvar direto? 
+        // Vamos salvar direto para simplificar
+        function ajustar(tipo, valor) {
+            let novoValor;
+            if (tipo === 'normal') {
+                novoValor = currentNormal + valor;
+                if(novoValor < 0) novoValor = 0;
+            } else {
+                novoValor = currentPref + valor;
+                if(novoValor < 0) novoValor = 0;
+            }
+            // Salva no banco (o .on ali em cima vai atualizar a tela sozinho)
+            db.ref('senhas/' + tipo).set(novoValor);
+        }
+
+        // 3. Botão Chamar (apenas garante que o valor está setado e poderia tocar som extra se quisesse)
+        function chamar(tipo) {
+            // Neste modelo simples, clicar em chamar apenas confirma o valor atual no banco
+            // Você pode adicionar lógica de piscar a tela aqui depois se quiser
+            const val = (tipo === 'normal') ? currentNormal : currentPref;
+            db.ref('senhas/' + tipo).set(val); 
+            alert(tipo.toUpperCase() + " " + val + " Chamado!");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Senhas - ETEC</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background-color: #f0f0f0; display: flex; flex-direction: column; height: 100vh; }
+        header { background: white; padding: 10px 40px; border-bottom: 5px solid #cc0000; display: flex; justify-content: space-between; align-items: center; }
+        .logo-text { color: #cc0000; font-weight: bold; font-size: 24px; }
+        .matricula { color: #666; }
+        
+        .main-container { flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px; padding: 20px; }
+        
+        /* Card Azul (Normal) */
+        .card { width: 45%; height: 70vh; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .card-normal { background: #0056b3; }
+        .card-pref { background: #dc3545; }
+        
+        .card-title { font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .card-number { font-size: 12rem; font-weight: bold; text-shadow: 4px 4px 10px rgba(0,0,0,0.3); }
+
+        footer { text-align: right; padding: 10px; color: #666; font-size: 12px; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="config.js"></script> 
+</head>
+<body>
+    <header>
+        <div class="logo-text">ETEC PRESIDENTE VARGAS</div>
+        <div class="matricula">MATRÍCULA 1/2026</div>
+    </header>
+
+    <div class="main-container">
+        <div class="card card-normal">
+            <div class="card-title">NORMAL</div>
+            <div class="card-number" id="displayNormal">----</div>
+        </div>
+
+        <div class="card card-pref">
+            <div class="card-title">PREFERENCIAL</div>
+            <div class="card-number" id="displayPref">P---</div>
+        </div>
+    </div>
+
+    <footer>AGUARDE SUA SENHA SER CHAMADA NO PAINEL</footer>
+
+    <script>
+        // Lógica para escutar o Firebase em tempo real
+        const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // Som de beep simples
+
+        // Escuta Senha Normal
+        db.ref('senhas/normal').on('value', (snapshot) => {
+            const val = snapshot.val() || 0;
+            const formatado = val.toString().padStart(4, '0');
+            
+            // Só toca som se o número mudou e não é a primeira carga
+            if(document.getElementById('displayNormal').innerText !== formatado && document.getElementById('displayNormal').innerText !== "----") {
+                audio.play();
+            }
+            document.getElementById('displayNormal').innerText = formatado;
+        });
+
+        // Escuta Senha Preferencial
+        db.ref('senhas/preferencial').on('value', (snapshot) => {
+            const val = snapshot.val() || 0;
+            const formatado = 'P' + val.toString().padStart(3, '0');
+            
+            if(document.getElementById('displayPref').innerText !== formatado && document.getElementById('displayPref').innerText !== "P---") {
+                audio.play();
+            }
+            document.getElementById('displayPref').innerText = formatado;
+        });
+    </script>
+</body>
+</html>
