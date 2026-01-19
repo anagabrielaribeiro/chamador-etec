@@ -15,10 +15,10 @@
         .titulo { display: block; color: #b11116; font-size: 24px; font-weight: 900; }
         .subtitulo { display: block; color: #555; font-size: 16px; font-weight: bold; }
 
-        /* LAYOUT PRINCIPAL (DIVIDIDO EM 2 PARTES) */
-        .main-container { flex: 1; display: flex; padding: 20px; gap: 20px; height: calc(100vh - 140px); }
+        /* CORPO PRINCIPAL */
+        .main-container { flex: 1; display: flex; padding: 20px; gap: 20px; height: calc(100vh - 160px); }
 
-        /* LADO ESQUERDO: CARTÕES ATUAIS */
+        /* ESQUERDA: CARTÕES */
         .area-cartoes { flex: 3; display: flex; gap: 20px; }
         .card { flex: 1; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); position: relative; transition: all 0.3s; opacity: 0.7; transform: scale(0.98); border: 4px solid transparent; }
         
@@ -29,123 +29,23 @@
         .card-titulo { font-size: 2.5vw; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .card-numero { font-size: 11vw; font-weight: 900; line-height: 1; text-shadow: 3px 3px 10px rgba(0,0,0,0.3); }
 
-        /* LADO DIREITO: HISTÓRICO (Igual foto Sicoob) */
-        .area-historico { flex: 1; background: white; border-radius: 15px; border: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        /* DIREITA: HISTÓRICO LIMPO */
+        .area-historico { flex: 0.8; background: white; border-radius: 15px; border: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        .hist-titulo { background: #333; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+        .hist-titulo { background: #333; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         
-        .lista-senhas { flex: 1; list-style: none; padding: 0; margin: 0; overflow-y: hidden; }
-        .hist-item { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 2rem; font-weight: bold; color: #555; }
-        .hist-item span { color: #b11116; } /* Cor do número */
-        .hist-item:nth-child(1) { background-color: #fff8e1; font-size: 2.5rem; color: #000; } /* Destaque para o último */
+        .lista-senhas { flex: 1; list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        .hist-item { width: 100%; padding: 15px 0; border-bottom: 1px solid #eee; text-align: center; font-size: 3rem; font-weight: 900; }
+        
+        /* Cores dos números no histórico */
+        .num-azul { color: #0056b3; }
+        .num-vermelho { color: #d32f2f; }
 
-        /* RODAPÉ MENOR */
+        /* ÁREA DE INFORMAÇÃO E RODAPÉ */
+        .info-bar { background: #333; color: #fff; padding: 8px; text-align: center; font-family: monospace; font-size: 1.2rem; display: flex; justify-content: center; gap: 15px; align-items: center; }
+        .destaque-amarelo { color: #ffd700; font-weight: bold; }
+
         footer { height: 40px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 2px; }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="config.js"></script>
-</head>
-<body>
-    <header>
-        <img src="img/etecpv.png" alt="Logo" class="logo-img">
-        <div class="cabecalho-texto">
-            <span class="titulo">ETEC PRESIDENTE VARGAS</span>
-            <span class="subtitulo">MATRÍCULA 1/2026</span>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <div class="area-cartoes">
-            <div id="cardNormal" class="card bg-azul">
-                <div class="card-titulo">NORMAL</div>
-                <div id="displayNormal" class="card-numero">0000</div>
-            </div>
-            <div id="cardPref" class="card bg-vermelho">
-                <div class="card-titulo">PREF.</div>
-                <div id="displayPref" class="card-numero">P000</div>
-            </div>
-        </div>
-
-        <div class="area-historico">
-            <div class="hist-titulo">ÚLTIMAS CHAMADAS</div>
-            <ul class="lista-senhas" id="listaHistorico">
-                <li class="hist-item" style="justify-content: center; color: #ccc; font-size: 1rem;">Histórico vazio...</li>
-            </ul>
-        </div>
-    </div>
-
-    <footer>AGUARDE SUA SENHA SER CHAMADA NO PAINEL</footer>
-    <audio id="somChamada" src="audio/chamada.wav"></audio>
-
-    <script>
-        const audio = document.getElementById('somChamada');
-        
-        // Array para guardar o histórico localmente enquanto a tela estiver aberta
-        let historico = [];
-
-        function adicionarAoHistorico(senha) {
-            // Adiciona no começo da lista
-            historico.unshift(senha);
-            // Mantém apenas as 4 últimas
-            if (historico.length > 4) historico.pop();
-            renderizarHistorico();
-        }
-
-        function renderizarHistorico() {
-            const ul = document.getElementById('listaHistorico');
-            ul.innerHTML = ''; // Limpa a lista
-            
-            historico.forEach(senha => {
-                const li = document.createElement('li');
-                li.className = 'hist-item';
-                // Define a cor baseada no tipo (Normal/Pref)
-                const cor = senha.startsWith('P') ? '#d32f2f' : '#0056b3';
-                li.innerHTML = `SENHA <span style="color: ${cor}">${senha}</span>`;
-                ul.appendChild(li);
-            });
-        }
-
-        function tocarSom() {
-            audio.play().catch(e => console.log("Clique na tela para ativar o som"));
-        }
-
-        // Listener Normal
-        db.ref('senhas/normal').on('value', (s) => {
-            const val = s.val() || 0;
-            const txt = val.toString().padStart(4, '0');
-            const el = document.getElementById('displayNormal');
-            
-            if(el.innerText !== txt && el.innerText !== "0000") {
-                el.innerText = txt;
-                document.getElementById('cardNormal').classList.add('destaque');
-                document.getElementById('cardPref').classList.remove('destaque');
-                adicionarAoHistorico(txt); // Adiciona ao histórico lateral
-                tocarSom();
-            } else {
-                el.innerText = txt; // Carga inicial
-            }
-        });
-
-        // Listener Preferencial
-        db.ref('senhas/preferencial').on('value', (s) => {
-            const val = s.val() || 0;
-            const txt = 'P' + val.toString().padStart(3, '0');
-            const el = document.getElementById('displayPref');
-
-            if(el.innerText !== txt && el.innerText !== "P000") {
-                el.innerText = txt;
-                document.getElementById('cardPref').classList.add('destaque');
-                document.getElementById('cardNormal').classList.remove('destaque');
-                adicionarAoHistorico(txt); // Adiciona ao histórico lateral
-                tocarSom();
-            } else {
-                el.innerText = txt; // Carga inicial
-            }
-        });
-        
-        // Clique para liberar áudio
-        document.body.addEventListener('click', () => { console.log("Áudio On"); });
-    </script>
-</body>
-</html>
+    <script src="https://www.gstatic.com/firebasejs/8.
