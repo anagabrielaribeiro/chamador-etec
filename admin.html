@@ -3,51 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN - RESET</title>
+    <title>ADMIN ETEC</title>
     <style>
-        body { background-color: #222; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
-        .box { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; max-width: 400px; margin: 20px auto; }
-        input { padding: 10px; font-size: 18px; width: 80px; text-align: center; border-radius: 5px; border: none; }
+        :root { --bg-color: #222; --box-bg: #333; --text: #fff; --input-bg: #fff; }
+        body.light-theme { --bg-color: #f4f4f4; --box-bg: #fff; --text: #333; --input-bg: #eee; }
+
+        body { background-color: var(--bg-color); color: var(--text); font-family: sans-serif; padding: 20px; text-align: center; transition: background 0.3s; }
+        .box { background: var(--box-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; max-width: 400px; margin: 20px auto; border: 1px solid #555; }
+        body.light-theme .box { border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        input { padding: 10px; font-size: 18px; width: 80px; text-align: center; border-radius: 5px; border: none; background: var(--input-bg); }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; margin-left: 10px; font-weight: bold; }
+        
+        .theme-btn { position: absolute; top: 20px; right: 20px; background: none; color: var(--text); font-size: 24px; }
         .btn-ok { background: #28a745; color: white; }
-        .btn-reset { background: #dc3545; color: white; width: 100%; margin: 0; margin-top: 10px; padding: 15px; }
-        h2 { margin-top: 0; color: #ccc; }
+        .btn-reset { background: #dc3545; color: white; width: 100%; margin-top: 10px; padding: 15px; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="config.js"></script>
 </head>
 <body>
+    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
     <h1>ÁREA RESTRITA</h1>
     
     <div class="box">
-        <h2>NORMAL</h2>
+        <h2>Definir Normal</h2>
         <input type="number" id="inputNormal" placeholder="0">
-        <button class="btn-ok" onclick="definir('normal')">DEFINIR</button>
+        <button class="btn-ok" onclick="definir('normal')">OK</button>
     </div>
 
     <div class="box">
-        <h2>PREFERENCIAL</h2>
+        <h2>Definir Preferencial</h2>
         <input type="number" id="inputPref" placeholder="0">
-        <button class="btn-ok" onclick="definir('preferencial')">DEFINIR</button>
+        <button class="btn-ok" onclick="definir('preferencial')">OK</button>
     </div>
 
-    <div class="box" style="border: 2px solid red;">
-        <button class="btn-reset" onclick="zerarTudo()">ZERAR TUDO (REINICIAR)</button>
+    <div class="box" style="border-color: red;">
+        <button class="btn-reset" onclick="zerar()">ZERAR TUDO (RESET)</button>
     </div>
 
     <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            localStorage.setItem('tema', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+        }
+        if(localStorage.getItem('tema') === 'light') document.body.classList.add('light-theme');
+
         function definir(tipo) {
-            const inputId = tipo === 'normal' ? 'inputNormal' : 'inputPref';
-            const valor = parseInt(document.getElementById(inputId).value);
-            if (!isNaN(valor)) {
-                db.ref('senhas/' + tipo).set(valor);
-                alert(tipo.toUpperCase() + " alterado para " + valor);
-            }
+            const val = parseInt(document.getElementById(tipo === 'normal' ? 'inputNormal' : 'inputPref').value);
+            if (!isNaN(val)) db.ref('senhas/' + tipo).set(val);
         }
 
-        function zerarTudo() {
-            if(confirm("Tem certeza que quer zerar tudo para o começo do evento?")) {
+        function zerar() {
+            if(confirm("Reiniciar contagem do zero?")) {
                 db.ref('senhas/normal').set(0);
                 db.ref('senhas/preferencial').set(0);
             }
