@@ -1,4 +1,3 @@
-//t
 // Substitua tudo abaixo pelo código que o Firebase te deu
 const firebaseConfig = {
 
@@ -23,3 +22,4 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
+
