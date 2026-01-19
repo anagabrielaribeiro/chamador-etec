@@ -3,106 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAINEL DE SENHAS - ETEC PRESIDENTE VARGAS</title>
-    
+    <title>PAINEL DE SENHAS - ETEC</title>
     <style>
-        /* --- CSS PURO --- */
+        /* CSS LIMPO E MODERNO */
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* CABEÇALHO */
-        header {
-            background-color: white;
-            height: 120px;
-            padding: 0 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 6px solid #b11116;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
+        header { background-color: white; height: 120px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 6px solid #b11116; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .logo-img { height: 80px; width: auto; }
         .cabecalho-texto { text-align: right; }
         .titulo { display: block; color: #b11116; font-size: 28px; font-weight: 900; letter-spacing: 1px; }
         .subtitulo { display: block; color: #666; font-size: 18px; font-weight: bold; margin-top: 5px; }
 
-        /* CORPO */
-        main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            padding: 20px 40px;
-        }
+        main { flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px; padding: 20px 40px; }
 
-        .card {
-            flex: 1;
-            height: 80%;
-            border-radius: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            border: 6px solid transparent; /* Borda invisível por padrão */
-            transition: all 0.5s ease; /* Animação suave */
-            opacity: 0.6; /* Começa meio apagado se não for o último */
-            transform: scale(0.95);
-        }
-
+        .card { flex: 1; height: 80%; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 15px 30px rgba(0,0,0,0.3); border: 6px solid transparent; transition: all 0.5s ease; opacity: 0.6; transform: scale(0.95); }
         .bg-azul { background: linear-gradient(135deg, #0056b3 0%, #004494 100%); }
         .bg-vermelho { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
 
-        /* CLASSE DE DESTAQUE (O Pulo do Gato) */
-        .card.destaque {
-            opacity: 1; /* Totalmente visível */
-            transform: scale(1.05); /* Fica um pouco maior */
-            border-color: #ffd700; /* Borda Dourada */
-            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Sombra forte */
-            z-index: 5;
-        }
+        .card.destaque { opacity: 1; transform: scale(1.05); border-color: #ffd700; box-shadow: 0 0 50px rgba(0,0,0,0.5); z-index: 5; }
+        .card-titulo { font-size: 3vw; font-weight: 900; margin-bottom: 10px; }
+        .card-numero { font-size: 14vw; font-weight: 900; line-height: 1; text-shadow: 4px 4px 10px rgba(0,0,0,0.4); }
 
-        .card-titulo { font-size: 3vw; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; opacity: 0.9; margin-bottom: 10px; }
-        .card-numero { font-size: 14vw; font-weight: 900; line-height: 1; text-shadow: 5px 5px 15px rgba(0,0,0,0.4); }
-
-        /* RODAPÉ COM A MENSAGEM DO ÚLTIMO CHAMADO */
-        footer {
-            height: 80px;
-            background: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 900;
-            color: #333;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        /* NOVO RODAPÉ DUPLO */
+        .footer-container { background: #ddd; display: flex; flex-direction: column; }
         
-        #textoUltimoChamado { color: #b11116; margin-left: 10px; }
-
+        .historico-bar { background: #333; color: #ffd700; text-align: center; padding: 5px; font-size: 18px; font-weight: bold; font-family: monospace; }
+        
+        .footer-msg { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #555; text-transform: uppercase; letter-spacing: 2px; }
     </style>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="config.js"></script>
 </head>
 <body>
-
     <header>
-        <img src="img/etecpv.png" alt="Logo ETEC" class="logo-img">
+        <img src="img/etecpv.png" alt="Logo" class="logo-img">
         <div class="cabecalho-texto">
             <span class="titulo">ETEC PRESIDENTE VARGAS</span>
             <span class="subtitulo">MATRÍCULA 1/2026</span>
@@ -114,81 +50,61 @@
             <div class="card-titulo">NORMAL</div>
             <div id="displayNormal" class="card-numero">0000</div>
         </div>
-
         <div id="cardPref" class="card bg-vermelho">
             <div class="card-titulo">PREFERENCIAL</div>
             <div id="displayPref" class="card-numero">P000</div>
         </div>
     </main>
 
-    <footer>
-        ÚLTIMA CHAMADA: <span id="textoUltimoChamado">AGUARDANDO...</span>
-    </footer>
+    <div class="footer-container">
+        <div class="historico-bar">
+            ÚLTIMA CHAMADA: <span id="txtHistorico">--</span> às <span id="txtHora">--:--</span>
+        </div>
+        <div class="footer-msg">AGUARDE SUA SENHA SER CHAMADA NO PAINEL</div>
+    </div>
 
     <audio id="somChamada" src="audio/chamada.wav"></audio>
 
     <script>
         const audio = document.getElementById('somChamada');
         
-        // Elementos Visuais
-        const cardNormal = document.getElementById('cardNormal');
-        const cardPref = document.getElementById('cardPref');
-        const textoRodape = document.getElementById('textoUltimoChamado');
-
-        function tocarAudio() {
-            audio.play().catch(e => console.log("Áudio pendente de clique."));
+        function atualizarInfo(textoSenha) {
+            const agora = new Date();
+            const horaFormatada = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            document.getElementById('txtHistorico').innerText = textoSenha;
+            document.getElementById('txtHora').innerText = horaFormatada;
+            
+            audio.play().catch(e => console.log("Som bloqueado até clique."));
         }
 
-        // Função para destacar quem chamou por último
-        function destacar(tipo) {
-            if(tipo === 'normal') {
-                // Ilumina o Normal, Apaga o Pref
-                cardNormal.classList.add('destaque');
-                cardPref.classList.remove('destaque');
-                textoRodape.innerText = "NORMAL";
-                textoRodape.style.color = "#0056b3"; // Azul
-            } else {
-                // Ilumina o Pref, Apaga o Normal
-                cardPref.classList.add('destaque');
-                cardNormal.classList.remove('destaque');
-                textoRodape.innerText = "PREFERENCIAL";
-                textoRodape.style.color = "#d32f2f"; // Vermelho
-            }
-        }
-
-        // 1. Escuta NORMAL
-        db.ref('senhas/normal').on('value', (snapshot) => {
-            const valor = snapshot.val() || 0;
-            const textoFormatado = valor.toString().padStart(4, '0');
+        db.ref('senhas/normal').on('value', (s) => {
+            const val = s.val() || 0;
+            const txt = val.toString().padStart(4, '0');
             const el = document.getElementById('displayNormal');
-
-            if(el.innerText !== textoFormatado && el.innerText !== "0000") {
-                el.innerText = textoFormatado;
-                tocarAudio();
-                destacar('normal'); // Chama a função que ilumina
-            } else {
-                // Apenas atualiza o texto na carga inicial sem tocar som
-                el.innerText = textoFormatado;
+            
+            if(el.innerText !== txt && el.innerText !== "0000") {
+                atualizarInfo("NORMAL " + txt);
+                document.getElementById('cardNormal').classList.add('destaque');
+                document.getElementById('cardPref').classList.remove('destaque');
             }
+            el.innerText = txt;
         });
 
-        // 2. Escuta PREFERENCIAL
-        db.ref('senhas/preferencial').on('value', (snapshot) => {
-            const valor = snapshot.val() || 0;
-            const textoFormatado = 'P' + valor.toString().padStart(3, '0');
+        db.ref('senhas/preferencial').on('value', (s) => {
+            const val = s.val() || 0;
+            const txt = 'P' + val.toString().padStart(3, '0');
             const el = document.getElementById('displayPref');
 
-            if(el.innerText !== textoFormatado && el.innerText !== "P000") {
-                el.innerText = textoFormatado;
-                tocarAudio();
-                destacar('preferencial'); // Chama a função que ilumina
-            } else {
-                el.innerText = textoFormatado;
+            if(el.innerText !== txt && el.innerText !== "P000") {
+                atualizarInfo("PREFERENCIAL " + txt);
+                document.getElementById('cardPref').classList.add('destaque');
+                document.getElementById('cardNormal').classList.remove('destaque');
             }
+            el.innerText = txt;
         });
 
-        // Clique para liberar áudio
-        document.body.addEventListener('click', () => { console.log("Áudio liberado"); });
+        document.body.addEventListener('click', () => console.log("Áudio ativo"));
     </script>
 </body>
 </html>
