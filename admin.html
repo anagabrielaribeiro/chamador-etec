@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN - RESET</title>
+    <style>
+        body { background-color: #222; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
+        .box { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; max-width: 400px; margin: 20px auto; }
+        input { padding: 10px; font-size: 18px; width: 80px; text-align: center; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; margin-left: 10px; font-weight: bold; }
+        .btn-ok { background: #28a745; color: white; }
+        .btn-reset { background: #dc3545; color: white; width: 100%; margin: 0; margin-top: 10px; padding: 15px; }
+        h2 { margin-top: 0; color: #ccc; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+    <h1>ÁREA RESTRITA</h1>
+    
+    <div class="box">
+        <h2>NORMAL</h2>
+        <input type="number" id="inputNormal" placeholder="0">
+        <button class="btn-ok" onclick="definir('normal')">DEFINIR</button>
+    </div>
 
+    <div class="box">
+        <h2>PREFERENCIAL</h2>
+        <input type="number" id="inputPref" placeholder="0">
+        <button class="btn-ok" onclick="definir('preferencial')">DEFINIR</button>
+    </div>
+
+    <div class="box" style="border: 2px solid red;">
+        <button class="btn-reset" onclick="zerarTudo()">ZERAR TUDO (REINICIAR)</button>
+    </div>
+
+    <script>
+        function definir(tipo) {
+            const inputId = tipo === 'normal' ? 'inputNormal' : 'inputPref';
+            const valor = parseInt(document.getElementById(inputId).value);
+            if (!isNaN(valor)) {
+                db.ref('senhas/' + tipo).set(valor);
+                alert(tipo.toUpperCase() + " alterado para " + valor);
+            }
+        }
+
+        function zerarTudo() {
+            if(confirm("Tem certeza que quer zerar tudo para o começo do evento?")) {
+                db.ref('senhas/normal').set(0);
+                db.ref('senhas/preferencial').set(0);
+            }
+        }
+    </script>
+</body>
+</html>
