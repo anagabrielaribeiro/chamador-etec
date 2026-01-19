@@ -48,4 +48,118 @@
 
         footer { height: 40px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 2px; }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/8.
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+    <header>
+        <img src="img/etecpv.png" alt="Logo" class="logo-img">
+        <div class="cabecalho-texto">
+            <span class="titulo">ETEC PRESIDENTE VARGAS</span>
+            <span class="subtitulo">MATRÍCULA 1/2026</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="area-cartoes">
+            <div id="cardNormal" class="card bg-azul">
+                <div class="card-titulo">NORMAL</div>
+                <div id="displayNormal" class="card-numero">0000</div>
+            </div>
+            <div id="cardPref" class="card bg-vermelho">
+                <div class="card-titulo">PREF.</div>
+                <div id="displayPref" class="card-numero">P000</div>
+            </div>
+        </div>
+
+        <div class="area-historico">
+            <div class="hist-titulo">Últimas Chamadas</div>
+            <ul class="lista-senhas" id="listaHistorico">
+                </ul>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <span>Última chamada: <span id="txtUltimo" class="destaque-amarelo">--</span></span>
+        <span>|</span>
+        <span>Às: <span id="txtHora" class="destaque-amarelo">--:--</span></span>
+    </div>
+
+    <footer>AGUARDE SUA SENHA SER CHAMADA NO PAINEL</footer>
+    <audio id="somChamada" src="audio/chamada.wav"></audio>
+
+    <script>
+        const audio = document.getElementById('somChamada');
+        let historico = [];
+
+        // Atualiza a barra preta com horário
+        function atualizarBarraInfo(textoSenha) {
+            const agora = new Date();
+            const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('txtUltimo').innerText = textoSenha;
+            document.getElementById('txtHora').innerText = hora;
+        }
+
+        // Adiciona na lateral sem texto "Senha", apenas o número colorido
+        function adicionarAoHistorico(texto, tipo) {
+            historico.unshift({ numero: texto, tipo: tipo });
+            if (historico.length > 5) historico.pop(); // Guarda os últimos 5
+            
+            const ul = document.getElementById('listaHistorico');
+            ul.innerHTML = '';
+            
+            historico.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'hist-item ' + (item.tipo === 'normal' ? 'num-azul' : 'num-vermelho');
+                li.innerText = item.numero;
+                ul.appendChild(li);
+            });
+        }
+
+        function tocarSom() {
+            audio.play().catch(e => console.log("Clique na tela para ativar o som"));
+        }
+
+        // Lógica Normal
+        db.ref('senhas/normal').on('value', (s) => {
+            const val = s.val() || 0;
+            const txt = val.toString().padStart(4, '0');
+            const el = document.getElementById('displayNormal');
+            
+            if(el.innerText !== txt && el.innerText !== "0000") {
+                el.innerText = txt;
+                document.getElementById('cardNormal').classList.add('destaque');
+                document.getElementById('cardPref').classList.remove('destaque');
+                
+                adicionarAoHistorico(txt, 'normal');
+                atualizarBarraInfo("NORMAL " + txt);
+                tocarSom();
+            } else {
+                el.innerText = txt;
+            }
+        });
+
+        // Lógica Preferencial
+        db.ref('senhas/preferencial').on('value', (s) => {
+            const val = s.val() || 0;
+            const txt = 'P' + val.toString().padStart(3, '0');
+            const el = document.getElementById('displayPref');
+
+            if(el.innerText !== txt && el.innerText !== "P000") {
+                el.innerText = txt;
+                document.getElementById('cardPref').classList.add('destaque');
+                document.getElementById('cardNormal').classList.remove('destaque');
+                
+                adicionarAoHistorico(txt, 'pref');
+                atualizarBarraInfo("PREF " + txt);
+                tocarSom();
+            } else {
+                el.innerText = txt;
+            }
+        });
+
+        document.body.addEventListener('click', () => { console.log("Áudio On"); });
+    </script>
+</body>
+</html>
