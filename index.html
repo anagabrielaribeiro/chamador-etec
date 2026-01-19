@@ -2,74 +2,128 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel de Senhas - ETEC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAINEL DE SENHAS - ETEC PRESIDENTE VARGAS</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background-color: #f0f0f0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: white; padding: 10px 40px; border-bottom: 5px solid #cc0000; display: flex; justify-content: space-between; align-items: center; }
-        .logo-text { color: #cc0000; font-weight: bold; font-size: 24px; }
-        .matricula { color: #666; }
+        body { background-color: #f0f2f5; color: #333; font-family: 'Arial', sans-serif; overflow: hidden; margin: 0; padding: 0; }
         
-        .main-container { flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px; padding: 20px; }
+        /* Cabeçalho */
+        .header-painel { background-color: #ffffff; padding: 15px 30px; border-bottom: 5px solid #b11116; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: 110px; display: flex; align-items: center; }
+        .etec-logo { max-height: 80px; }
+        .texto-header { text-align: right; width: 100%; }
+        .titulo-escola { font-size: 2.2em; font-weight: bold; color: #b11116; display: block; }
+        .subtitulo-escola { font-size: 1.4em; color: #555; }
         
-        /* Card Azul (Normal) */
-        .card { width: 45%; height: 70vh; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .card-normal { background: #0056b3; }
-        .card-pref { background: #dc3545; }
+        /* Área das Senhas */
+        .area-senhas { margin-top: 30px; padding: 0 20px; }
+        .card-senha { border-radius: 40px; padding: 40px 20px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); height: 70vh; display: flex; flex-direction: column; justify-content: center; border: 4px solid rgba(255,255,255,0.2); }
         
-        .card-title { font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        .card-number { font-size: 12rem; font-weight: bold; text-shadow: 4px 4px 10px rgba(0,0,0,0.3); }
-
-        footer { text-align: right; padding: 10px; color: #666; font-size: 12px; }
+        .card-normal { background-color: #0056b3; color: #ffffff; }
+        .card-pref { background-color: #d32f2f; color: #ffffff; }
+        
+        .label-setor { font-size: 3.5em; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 4px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); }
+        .senha-numero { font-size: 13em; font-weight: 900; line-height: 1; margin: 10px 0; text-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
+        
+        /* Rodapé e Debug */
+        .footer { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 1.3em; color: #444; font-weight: bold; text-transform: uppercase; }
+        
+        #debug-info { position: fixed; bottom: 10px; right: 15px; font-size: 0.85em; color: #888; font-family: 'Courier New', Courier, monospace; background: rgba(255, 255, 255, 0.7); padding: 5px 10px; border-radius: 5px; }
     </style>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="config.js"></script> 
 </head>
 <body>
-    <header>
-        <div class="logo-text">ETEC PRESIDENTE VARGAS</div>
-        <div class="matricula">MATRÍCULA 1/2026</div>
-    </header>
 
-    <div class="main-container">
-        <div class="card card-normal">
-            <div class="card-title">NORMAL</div>
-            <div class="card-number" id="displayNormal">----</div>
-        </div>
-
-        <div class="card card-pref">
-            <div class="card-title">PREFERENCIAL</div>
-            <div class="card-number" id="displayPref">P---</div>
+    <div class="header-painel">
+        <div class="container-fluid" style="width: 100%;">
+            <div class="row" style="display: flex; align-items: center;">
+                <div class="col-xs-2">
+                    <img src="img/etecpv.png" class="etec-logo" alt="Logo ETEC">
+                </div>
+                <div class="col-xs-10 texto-header">
+                    <span class="titulo-escola">ETEC PRESIDENTE VARGAS</span>
+                    <span class="subtitulo-escola">MATRÍCULA 1/2026</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <footer>AGUARDE SUA SENHA SER CHAMADA NO PAINEL</footer>
+    <div class="container-fluid area-senhas">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="card-senha card-normal">
+                    <div class="label-setor">NORMAL</div>
+                    <div id="senhaNormalNumero" class="senha-numero">0000</div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="card-senha card-pref">
+                    <div class="label-setor">PREFERENCIAL</div>
+                    <div id="senhaPrefNumero" class="senha-numero">P000</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">AGUARDE SUA SENHA SER CHAMADA NO PAINEL</div>
+
+    <div id="debug-info">
+        <span class="glyphicon glyphicon-ok-circle"></span> CONECTADO
+        | Última chamada: <span id="last-sync">--:--:--</span>
+    </div>
+
+    <audio id="audioChamada" src="audio/chamada.wav"></audio>
 
     <script>
-        // Lógica para escutar o Firebase em tempo real
-        const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // Som de beep simples
+        // Prepara o som
+        const playerAudio = document.getElementById('audioChamada');
 
-        // Escuta Senha Normal
+        function tocarSom() {
+            // Tenta tocar o som e trata erro caso o navegador bloqueie
+            playerAudio.play().catch(function(error) {
+                console.log("O navegador bloqueou o som automático. Clique na tela uma vez para liberar.");
+            });
+        }
+
+        function atualizarHora() {
+            const agora = new Date();
+            document.getElementById('last-sync').innerText = agora.toLocaleTimeString();
+        }
+
+        // --- LÓGICA DO FIREBASE ---
+
+        // 1. Escuta Senha Normal
         db.ref('senhas/normal').on('value', (snapshot) => {
             const val = snapshot.val() || 0;
             const formatado = val.toString().padStart(4, '0');
-            
-            // Só toca som se o número mudou e não é a primeira carga
-            if(document.getElementById('displayNormal').innerText !== formatado && document.getElementById('displayNormal').innerText !== "----") {
-                audio.play();
+            const elemento = document.getElementById('senhaNormalNumero');
+
+            // Se o valor mudou e não é o inicial (0000), toca som
+            if(elemento.innerText !== formatado && elemento.innerText !== "0000") {
+                tocarSom();
+                atualizarHora();
             }
-            document.getElementById('displayNormal').innerText = formatado;
+            
+            elemento.innerText = formatado;
         });
 
-        // Escuta Senha Preferencial
+        // 2. Escuta Senha Preferencial
         db.ref('senhas/preferencial').on('value', (snapshot) => {
             const val = snapshot.val() || 0;
             const formatado = 'P' + val.toString().padStart(3, '0');
-            
-            if(document.getElementById('displayPref').innerText !== formatado && document.getElementById('displayPref').innerText !== "P---") {
-                audio.play();
+            const elemento = document.getElementById('senhaPrefNumero');
+
+            if(elemento.innerText !== formatado && elemento.innerText !== "P000") {
+                tocarSom();
+                atualizarHora();
             }
-            document.getElementById('displayPref').innerText = formatado;
+
+            elemento.innerText = formatado;
         });
     </script>
 </body>
