@@ -5,58 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADMIN ETEC</title>
     <style>
-        :root { --bg-color: #222; --box-bg: #333; --text: #fff; --input-bg: #fff; }
-        body.light-theme { --bg-color: #f4f4f4; --box-bg: #fff; --text: #333; --input-bg: #eee; }
-
-        body { background-color: var(--bg-color); color: var(--text); font-family: sans-serif; padding: 20px; text-align: center; transition: background 0.3s; }
-        .box { background: var(--box-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; max-width: 400px; margin: 20px auto; border: 1px solid #555; }
-        body.light-theme .box { border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
-        input { padding: 10px; font-size: 18px; width: 80px; text-align: center; border-radius: 5px; border: none; background: var(--input-bg); }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; margin-left: 10px; font-weight: bold; }
+        :root { --bg-color: #222; --box-bg: #333; --text: #fff; --input-bg: #fff; --border: #555; }
         
-        .theme-btn { position: absolute; top: 20px; right: 20px; background: none; color: var(--text); font-size: 24px; }
+        /* Tema Claro */
+        body.light-theme { --bg-color: #f4f4f4; --box-bg: #fff; --text: #333; --input-bg: #eee; --border: #ccc; }
+
+        body { background-color: var(--bg-color); color: var(--text); font-family: sans-serif; padding: 20px; text-align: center; transition: background 0.3s; display: flex; flex-direction: column; align-items: center; }
+        
+        .logo-admin { height: 80px; margin-bottom: 10px; margin-top: 10px; }
+        
+        h1 { margin-top: 0; text-transform: uppercase; font-size: 1.5rem; letter-spacing: 1px; color: var(--text); }
+
+        .box { background: var(--box-bg); padding: 25px; border-radius: 10px; margin-bottom: 20px; width: 90%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        h2 { margin-top: 0; font-size: 1.2rem; margin-bottom: 15px; opacity: 0.9; }
+
+        .input-group { display: flex; justify-content: center; gap: 10px; }
+
+        input { padding: 10px; font-size: 24px; width: 100px; text-align: center; border-radius: 5px; border: 2px solid transparent; background: var(--input-bg); font-weight: bold; color: #333; }
+        input:focus { outline: none; border-color: #0056b3; }
+
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
+        
+        .theme-btn { position: absolute; top: 20px; right: 20px; background: none; color: var(--text); font-size: 24px; padding: 5px; }
         .btn-ok { background: #28a745; color: white; }
-        .btn-reset { background: #dc3545; color: white; width: 100%; margin-top: 10px; padding: 15px; }
+        .btn-reset { background: #dc3545; color: white; width: 100%; padding: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Status de conexão */
+        .status { font-size: 12px; color: #aaa; margin-bottom: 20px; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="config.js"></script>
 </head>
 <body>
-    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
-    <h1>ÁREA RESTRITA</h1>
+    <button class="theme-btn" onclick="toggleTheme()" title="Mudar Tema">🌓</button>
+    
+    <img src="img/etecpv.png" alt="Logo ETEC" class="logo-admin">
+    
+    <h1>Área Restrita</h1>
+    <div class="status">● Sincronizado com o Banco de Dados</div>
     
     <div class="box">
         <h2>Definir Normal</h2>
-        <input type="number" id="inputNormal" placeholder="0">
-        <button class="btn-ok" onclick="definir('normal')">OK</button>
+        <div class="input-group">
+            <input type="number" id="inputNormal" placeholder="...">
+            <button class="btn-ok" onclick="definir('normal')">SALVAR</button>
+        </div>
     </div>
 
     <div class="box">
         <h2>Definir Preferencial</h2>
-        <input type="number" id="inputPref" placeholder="0">
-        <button class="btn-ok" onclick="definir('preferencial')">OK</button>
+        <div class="input-group">
+            <input type="number" id="inputPref" placeholder="...">
+            <button class="btn-ok" onclick="definir('preferencial')">SALVAR</button>
+        </div>
     </div>
 
-    <div class="box" style="border-color: red;">
+    <div class="box" style="border-color: #dc3545;">
+        <h2 style="color: #dc3545;">Zona de Perigo</h2>
         <button class="btn-reset" onclick="zerar()">ZERAR TUDO (RESET)</button>
     </div>
 
     <script>
+        // Tema
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             localStorage.setItem('tema', document.body.classList.contains('light-theme') ? 'light' : 'dark');
         }
         if(localStorage.getItem('tema') === 'light') document.body.classList.add('light-theme');
 
+        // --- SINCRONIZAÇÃO AUTOMÁTICA ---
+        // Assim que o dado muda no banco, ele aparece dentro do input
+        db.ref('senhas').on('value', (snap) => {
+            const dados = snap.val() || {};
+            const normal = dados.normal || 0;
+            const pref = dados.preferencial || 0;
+
+            // Só atualiza se o usuário NÃO estiver digitando (para não atrapalhar)
+            if (document.activeElement.id !== 'inputNormal') {
+                document.getElementById('inputNormal').value = normal;
+            }
+            if (document.activeElement.id !== 'inputPref') {
+                document.getElementById('inputPref').value = pref;
+            }
+        });
+
+        // Função para enviar o número que você digitou
         function definir(tipo) {
-            const val = parseInt(document.getElementById(tipo === 'normal' ? 'inputNormal' : 'inputPref').value);
-            if (!isNaN(val)) db.ref('senhas/' + tipo).set(val);
+            const id = tipo === 'normal' ? 'inputNormal' : 'inputPref';
+            const val = parseInt(document.getElementById(id).value);
+            
+            if (!isNaN(val)) {
+                db.ref('senhas/' + tipo).set(val);
+                // Feedback visual rápido
+                alert(tipo.toUpperCase() + " atualizado para " + val);
+            }
         }
 
         function zerar() {
-            if(confirm("Reiniciar contagem do zero?")) {
+            if(confirm("ATENÇÃO: Isso vai reiniciar a contagem para 0.\nTem certeza?")) {
                 db.ref('senhas/normal').set(0);
                 db.ref('senhas/preferencial').set(0);
             }
