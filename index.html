@@ -5,125 +5,214 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAINEL DE SENHAS - ETEC PRESIDENTE VARGAS</title>
     
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    
     <style>
-        body { background-color: #f0f2f5; color: #333; font-family: 'Arial', sans-serif; overflow: hidden; margin: 0; padding: 0; }
+        /* --- CSS PURO (Sem Bootstrap) --- */
         
-        /* Cabeçalho */
-        .header-painel { background-color: #ffffff; padding: 15px 30px; border-bottom: 5px solid #b11116; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: 110px; display: flex; align-items: center; }
-        .etec-logo { max-height: 80px; }
-        .texto-header { text-align: right; width: 100%; }
-        .titulo-escola { font-size: 2.2em; font-weight: bold; color: #b11116; display: block; }
-        .subtitulo-escola { font-size: 1.4em; color: #555; }
-        
-        /* Área das Senhas */
-        .area-senhas { margin-top: 30px; padding: 0 20px; }
-        .card-senha { border-radius: 40px; padding: 40px 20px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); height: 70vh; display: flex; flex-direction: column; justify-content: center; border: 4px solid rgba(255,255,255,0.2); }
-        
-        .card-normal { background-color: #0056b3; color: #ffffff; }
-        .card-pref { background-color: #d32f2f; color: #ffffff; }
-        
-        .label-setor { font-size: 3.5em; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 4px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); }
-        .senha-numero { font-size: 13em; font-weight: 900; line-height: 1; margin: 10px 0; text-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
-        
-        /* Rodapé e Debug */
-        .footer { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 1.3em; color: #444; font-weight: bold; text-transform: uppercase; }
-        
-        #debug-info { position: fixed; bottom: 10px; right: 15px; font-size: 0.85em; color: #888; font-family: 'Courier New', Courier, monospace; background: rgba(255, 255, 255, 0.7); padding: 5px 10px; border-radius: 5px; }
+        /* Reset para garantir que não haja bordas brancas indesejadas */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            height: 100vh; /* Ocupa 100% da altura da tela */
+            display: flex;
+            flex-direction: column; /* Organiza: Cabeçalho em cima, Corpo no meio, Rodapé embaixo */
+            overflow: hidden; /* Evita barras de rolagem */
+        }
+
+        /* --- CABEÇALHO --- */
+        header {
+            background-color: white;
+            height: 120px; /* Altura fixa */
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Joga Logo pra esquerda e Texto pra direita */
+            border-bottom: 6px solid #b11116; /* Linha vermelha grossa */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .logo-img {
+            height: 80px; /* Tamanho da logo */
+            width: auto;
+        }
+
+        .cabecalho-texto {
+            text-align: right;
+        }
+
+        .titulo {
+            display: block;
+            color: #b11116;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .subtitulo {
+            display: block;
+            color: #666;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* --- CORPO PRINCIPAL (CARTÕES) --- */
+        main {
+            flex: 1; /* Ocupa todo o espaço sobrando na tela */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px; /* Espaço entre os cartões */
+            padding: 20px 40px;
+        }
+
+        .card {
+            flex: 1; /* Cada cartão ocupa 50% do espaço */
+            height: 80%; /* Altura do cartão relativa à tela */
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            border: 4px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .bg-azul { background-color: #0056b3; background: linear-gradient(135deg, #0056b3 0%, #004494 100%); }
+        .bg-vermelho { background-color: #d32f2f; background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
+
+        .card-titulo {
+            font-size: 3vw; /* Tamanho responsivo (3% da largura da tela) */
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .card-numero {
+            font-size: 14vw; /* Tamanho GIGANTE responsivo */
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+        }
+
+        /* --- RODAPÉ --- */
+        footer {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- STATUS DE CONEXÃO (Cantinho da tela) --- */
+        .status-box {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            background: rgba(255,255,255,0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #555;
+            font-family: monospace;
+        }
+
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="config.js"></script> 
+    <script src="config.js"></script>
 </head>
 <body>
 
-    <div class="header-painel">
-        <div class="container-fluid" style="width: 100%;">
-            <div class="row" style="display: flex; align-items: center;">
-                <div class="col-xs-2">
-                    <img src="img/etecpv.png" class="etec-logo" alt="Logo ETEC">
-                </div>
-                <div class="col-xs-10 texto-header">
-                    <span class="titulo-escola">ETEC PRESIDENTE VARGAS</span>
-                    <span class="subtitulo-escola">MATRÍCULA 1/2026</span>
-                </div>
-            </div>
+    <header>
+        <img src="img/etecpv.png" alt="Logo ETEC" class="logo-img">
+        
+        <div class="cabecalho-texto">
+            <span class="titulo">ETEC PRESIDENTE VARGAS</span>
+            <span class="subtitulo">MATRÍCULA 1/2026</span>
         </div>
-    </div>
+    </header>
 
-    <div class="container-fluid area-senhas">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="card-senha card-normal">
-                    <div class="label-setor">NORMAL</div>
-                    <div id="senhaNormalNumero" class="senha-numero">0000</div>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="card-senha card-pref">
-                    <div class="label-setor">PREFERENCIAL</div>
-                    <div id="senhaPrefNumero" class="senha-numero">P000</div>
-                </div>
-            </div>
+    <main>
+        <div class="card bg-azul">
+            <div class="card-titulo">NORMAL</div>
+            <div id="displayNormal" class="card-numero">0000</div>
         </div>
+
+        <div class="card bg-vermelho">
+            <div class="card-titulo">PREFERENCIAL</div>
+            <div id="displayPref" class="card-numero">P000</div>
+        </div>
+    </main>
+
+    <footer>
+        AGUARDE SUA SENHA SER CHAMADA NO PAINEL
+    </footer>
+
+    <div class="status-box">
+        ● Sistema Online | Última chamada: <span id="horaUltima">--:--:--</span>
     </div>
 
-    <div class="footer">AGUARDE SUA SENHA SER CHAMADA NO PAINEL</div>
-
-    <div id="debug-info">
-        <span class="glyphicon glyphicon-ok-circle"></span> CONECTADO
-        | Última chamada: <span id="last-sync">--:--:--</span>
-    </div>
-
-    <audio id="audioChamada" src="audio/chamada.wav"></audio>
+    <audio id="somChamada" src="audio/chamada.wav"></audio>
 
     <script>
-        // Prepara o som
-        const playerAudio = document.getElementById('audioChamada');
+        // --- LÓGICA DO SISTEMA ---
+        
+        const audio = document.getElementById('somChamada');
 
-        function tocarSom() {
-            // Tenta tocar o som e trata erro caso o navegador bloqueie
-            playerAudio.play().catch(function(error) {
-                console.log("O navegador bloqueou o som automático. Clique na tela uma vez para liberar.");
-            });
+        // Função segura para tocar áudio
+        function tocarAudio() {
+            // Tenta tocar. Se o navegador bloquear, avisa no console.
+            audio.play().catch(e => console.log("Áudio aguardando interação do usuário."));
         }
 
-        function atualizarHora() {
+        function atualizarRelogio() {
             const agora = new Date();
-            document.getElementById('last-sync').innerText = agora.toLocaleTimeString();
+            document.getElementById('horaUltima').innerText = agora.toLocaleTimeString();
         }
-
-        // --- LÓGICA DO FIREBASE ---
 
         // 1. Escuta Senha Normal
         db.ref('senhas/normal').on('value', (snapshot) => {
-            const val = snapshot.val() || 0;
-            const formatado = val.toString().padStart(4, '0');
-            const elemento = document.getElementById('senhaNormalNumero');
+            const valor = snapshot.val() || 0;
+            const textoFormatado = valor.toString().padStart(4, '0');
+            const elemento = document.getElementById('displayNormal');
 
-            // Se o valor mudou e não é o inicial (0000), toca som
-            if(elemento.innerText !== formatado && elemento.innerText !== "0000") {
-                tocarSom();
-                atualizarHora();
+            // Verifica se mudou para tocar o som
+            if(elemento.innerText !== textoFormatado && elemento.innerText !== "0000") {
+                tocarAudio();
+                atualizarRelogio();
             }
-            
-            elemento.innerText = formatado;
+            elemento.innerText = textoFormatado;
         });
 
         // 2. Escuta Senha Preferencial
         db.ref('senhas/preferencial').on('value', (snapshot) => {
-            const val = snapshot.val() || 0;
-            const formatado = 'P' + val.toString().padStart(3, '0');
-            const elemento = document.getElementById('senhaPrefNumero');
+            const valor = snapshot.val() || 0;
+            const textoFormatado = 'P' + valor.toString().padStart(3, '0');
+            const elemento = document.getElementById('displayPref');
 
-            if(elemento.innerText !== formatado && elemento.innerText !== "P000") {
-                tocarSom();
-                atualizarHora();
+            if(elemento.innerText !== textoFormatado && elemento.innerText !== "P000") {
+                tocarAudio();
+                atualizarRelogio();
             }
+            elemento.innerText = textoFormatado;
+        });
 
-            elemento.innerText = formatado;
+        // Clique na tela para liberar o áudio (Exigência do Chrome/Edge)
+        document.body.addEventListener('click', () => {
+            console.log("Áudio liberado pelo usuário");
         });
     </script>
 </body>
